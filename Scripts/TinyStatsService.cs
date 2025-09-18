@@ -38,10 +38,10 @@ namespace TinyStats {
         #if UNITY_ANDROID
             platform = RuntimePlatform.Android;
         #elif UNITY_STANDALONE_WIN
-            _platform = RuntimePlatform.WindowsEditor;
+            platform = RuntimePlatform.WindowsEditor;
         #endif
         #else
-            _platform = Application.platform;
+            platform = Application.platform;
         #endif
             
             graphicsDeviceType = SystemInfo.graphicsDeviceType;
@@ -81,13 +81,19 @@ namespace TinyStats {
             return UnityEditor.PlayerSettings.Android.bundleVersionCode;
         #endif
             
-            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            try {
+                AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                
+                AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                AndroidJavaObject packageManager = currentActivity.Call<AndroidJavaObject>("getPackageManager");
+                AndroidJavaObject packageInfo = packageManager.Call<AndroidJavaObject>("getPackageInfo", Application.identifier, 0);
+                
+                return packageInfo.Get<int>("versionCode");
+            } catch (Exception exception) {
+                Debug.LogError(exception);
+            }
             
-            AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-            AndroidJavaObject packageManager = currentActivity.Call<AndroidJavaObject>("getPackageManager");
-            AndroidJavaObject packageInfo = packageManager.Call<AndroidJavaObject>("getPackageInfo", Application.identifier, 0);
-
-            return packageInfo.Get<int>("versionCode");
+            return 0;
         }
 
         private static int GetAndroidSDKVersion() {
@@ -95,18 +101,24 @@ namespace TinyStats {
             return (int)UnityEditor.PlayerSettings.Android.minSdkVersion;
         #endif
             
-            string androidVersionText = SystemInfo.operatingSystem;
-            int sdkPos = androidVersionText.IndexOf("API-", StringComparison.Ordinal) + 4;
+            try {
+                string androidVersionText = SystemInfo.operatingSystem;
+                int sdkPos = androidVersionText.IndexOf("API-", StringComparison.Ordinal) + 4;
                 
-            if (androidVersionText.Length < sdkPos + 2) {
-                return 0;
-            }
+                if (androidVersionText.Length < sdkPos + 2) {
+                    return 0;
+                }
                 
-            if (!int.TryParse(androidVersionText.Substring(sdkPos, 2), out int result)) {
-                return 0;
+                if (!int.TryParse(androidVersionText.Substring(sdkPos, 2), out int result)) {
+                    return 0;
+                }
+                
+                return result;    
+            } catch (Exception exception) {
+                Debug.LogError(exception);
             }
-
-            return result;
+            
+            return 0;
         }
     #endif
     }
