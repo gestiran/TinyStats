@@ -1,0 +1,19 @@
+{
+    "name": "TinyStats.Editor",
+    "rootNamespace": "TinyStats",
+    "references": [
+        "GUID:9577ba1cc895ee54190b10d62635b833",
+        "GUID:2c3c82a91ae9d6a4cad34876c6572ba8"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
