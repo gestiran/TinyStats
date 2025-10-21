@@ -33,7 +33,7 @@ namespace TinyStats {
         #if UNITY_ANDROID
             androidSDKVersion = GetAndroidSDKVersion();
         #endif
-
+            
         #if UNITY_EDITOR
         #if UNITY_ANDROID
             platform = RuntimePlatform.Android;
@@ -65,18 +65,18 @@ namespace TinyStats {
                 result = CreateCurrent(current);
                 VersionsPrefs.SaveVersions(result);
             }
-
+            
             return result;
         }
-
+        
         private static List<ApplicationVersion> CreateCurrent(ApplicationVersion current) {
             List<ApplicationVersion> result = new List<ApplicationVersion>(1);
             result.Add(current);
             return result;
         }
         
-    #if UNITY_ANDROID
         private static int GetBundleVersion() {
+        #if UNITY_ANDROID
         #if UNITY_EDITOR
             return UnityEditor.PlayerSettings.Android.bundleVersionCode;
         #endif
@@ -94,9 +94,13 @@ namespace TinyStats {
             }
             
             return 0;
+        #else
+            return 0;
+        #endif
         }
-
+        
         private static int GetAndroidSDKVersion() {
+        #if UNITY_ANDROID
         #if UNITY_EDITOR
             return (int)UnityEditor.PlayerSettings.Android.minSdkVersion;
         #endif
@@ -113,13 +117,15 @@ namespace TinyStats {
                     return 0;
                 }
                 
-                return result;    
+                return result;
             } catch (Exception exception) {
                 Debug.LogError(exception);
             }
             
             return 0;
+        #else
+            return 0;
+        #endif
         }
-    #endif
     }
 }
