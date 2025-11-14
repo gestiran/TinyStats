@@ -13,7 +13,10 @@ namespace TinyStats.Editor.VersionUpscale {
         private static int _tempMajor;
         private static int _tempMinor;
         private static int _tempPatch;
+        
+    #if UNITY_ANDROID
         private static int _tempTest;
+    #endif
         
         private static bool _isEnableBundleUpscale;
         private static bool _isEnableVersioning;
@@ -34,7 +37,10 @@ namespace TinyStats.Editor.VersionUpscale {
             _tempMajor = _currentVersion.major;
             _tempMinor = _currentVersion.minor;
             _tempPatch = _currentVersion.patch;
+            
+        #if UNITY_ANDROID
             _tempTest = _currentVersion.test;
+        #endif
         }
         
         [SettingsProvider]
@@ -96,10 +102,18 @@ namespace TinyStats.Editor.VersionUpscale {
             _tempMajor = VerticalIntField("Major", _tempMajor, _VERSION_SEGMENT_WIDTH);
             _tempMinor = VerticalIntField("Minor", _tempMinor, _VERSION_SEGMENT_WIDTH);
             _tempPatch = VerticalIntField("Patch", _tempPatch, _VERSION_SEGMENT_WIDTH);
+            
+        #if UNITY_ANDROID
             _tempTest = VerticalIntField("Test", _tempTest, _VERSION_SEGMENT_WIDTH);
+        #endif
             
             EditorGUILayout.EndHorizontal();
+            
+        #if UNITY_ANDROID
             return new ApplicationVersion(_tempMajor, _tempMinor, _tempPatch, _tempTest);
+        #else
+            return new ApplicationVersion(_tempMajor, _tempMinor, _tempPatch);
+        #endif
         }
         
         private static int VerticalIntField(string label, int value, float width) {

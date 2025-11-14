@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace TinyStats.Versions {
     public static class ApplicationVersionExtension {
+    #if UNITY_ANDROID
         public static ApplicationVersion ToNextMajor(this ApplicationVersion version) {
             return new ApplicationVersion(version.major + 1, version.minor, version.patch, version.test);
         }
@@ -28,8 +29,33 @@ namespace TinyStats.Versions {
         public static ApplicationVersion ToPreviousPatch(this ApplicationVersion version) {
             return new ApplicationVersion(version.major, version.minor, version.patch - 1, version.test);
         }
+    #else
+        public static ApplicationVersion ToNextMajor(this ApplicationVersion version) {
+            return new ApplicationVersion(version.major + 1, version.minor, version.patch);
+        }
         
-        public static ApplicationVersion CreateVersionFromBundle(string versionText, int bundleVersion) {
+        public static ApplicationVersion ToPreviousMajor(this ApplicationVersion version) {
+            return new ApplicationVersion(version.major - 1, version.minor, version.patch);
+        }
+        
+        public static ApplicationVersion ToNextMinor(this ApplicationVersion version) {
+            return new ApplicationVersion(version.major, version.minor + 1, version.patch);
+        }
+        
+        public static ApplicationVersion ToPreviousMinor(this ApplicationVersion version) {
+            return new ApplicationVersion(version.major, version.minor - 1, version.patch);
+        }
+        
+        public static ApplicationVersion ToNextPatch(this ApplicationVersion version) {
+            return new ApplicationVersion(version.major, version.minor, version.patch + 1);
+        }
+        
+        public static ApplicationVersion ToPreviousPatch(this ApplicationVersion version) {
+            return new ApplicationVersion(version.major, version.minor, version.patch - 1);
+        }
+    #endif
+        
+        public static ApplicationVersion CreateVersionFromBundle(string versionText, int bundleVersion = 0) {
             string[] parts = versionText.Split('.');
             
             if (parts.Length != 3) {
@@ -60,7 +86,11 @@ namespace TinyStats.Versions {
                 return new ApplicationVersion();
             }
             
+        #if UNITY_ANDROID
             return new ApplicationVersion(major, minor, patch, bundleVersion);
+        #else
+            return new ApplicationVersion(major, minor, patch);
+        #endif
         }
     }
 }

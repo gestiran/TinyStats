@@ -13,7 +13,10 @@ namespace TinyStats.Versions {
         private const string _MAJOR_ATTRIBUTE = "major";
         private const string _MINOR_ATTRIBUTE = "minor";
         private const string _PATCH_ATTRIBUTE = "patch";
+        
+    #if UNITY_ANDROID
         private const string _TEST_ATTRIBUTE = "test";
+    #endif
         
         public static bool IsHaveSaved() {
             return PlayerPrefs.HasKey(_VERSIONS);
@@ -62,7 +65,10 @@ namespace TinyStats.Versions {
             result.Add(new XAttribute(_MAJOR_ATTRIBUTE, version.major));
             result.Add(new XAttribute(_MINOR_ATTRIBUTE, version.minor));
             result.Add(new XAttribute(_PATCH_ATTRIBUTE, version.patch));
+            
+        #if UNITY_ANDROID
             result.Add(new XAttribute(_TEST_ATTRIBUTE, version.test));
+        #endif
             
             return result;
         }
@@ -80,11 +86,16 @@ namespace TinyStats.Versions {
                 return ReturnDefaultVersion(false, out version);
             }
             
+        #if UNITY_ANDROID
             if (!TryGetIntValueFromAttribute(element, _TEST_ATTRIBUTE, out int testVersion)) {
                 return ReturnDefaultVersion(false, out version);
             }
             
             version = new ApplicationVersion(majorVersion, minorVersion, patchVersion, testVersion);
+            
+        #else
+            version = new ApplicationVersion(majorVersion, minorVersion, patchVersion);
+        #endif
             
             return true;
         }
